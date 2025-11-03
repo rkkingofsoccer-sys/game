@@ -90,3 +90,44 @@ public class Tagger : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, tagRadius);
     }
 }
+using UnityEngine;
+
+public class TaggedState : MonoBehaviour
+{
+    [Header("Tag Settings")]
+    public bool isIt = false;
+    public Renderer playerRenderer;
+    public Color itColor = Color.red;
+    public Color normalColor = Color.white;
+
+    private void Start()
+    {
+        if (playerRenderer == null)
+            playerRenderer = GetComponentInChildren<Renderer>();
+
+        UpdateColor();
+    }
+
+    public void OnTagged(GameObject tagger)
+    {
+        if (!isIt)
+        {
+            // Transfer "it" status
+            var taggerState = tagger.GetComponent<TaggedState>();
+            if (taggerState != null)
+            {
+                taggerState.isIt = false;
+                taggerState.UpdateColor();
+            }
+
+            isIt = true;
+            UpdateColor();
+        }
+    }
+
+    private void UpdateColor()
+    {
+        if (playerRenderer != null)
+            playerRenderer.material.color = isIt ? itColor : normalColor;
+    }
+}
